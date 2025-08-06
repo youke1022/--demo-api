@@ -1,8 +1,8 @@
 pipeline {
     agent any
     tools {
-        python 'Python 3.9'  // 引用全局配置的Python
-        nodejs 'NodeJS 18'   // 引用全局配置的NodeJS（用于Newman）
+        python 'Python3.9'  // 引用全局配置的Python
+        nodejs 'Node 24'   // 引用全局配置的NodeJS（用于Newman）
     }
     stages {
         stage('Checkout Code from GitHub') {
