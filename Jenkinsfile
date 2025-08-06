@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        python 'Python3.9'  // 引用全局配置的Python
+        'jenkins.plugins.shiningpanda.tools.PythonInstallation' 'Python3.9'  // 引用全局配置的Python
         nodejs 'Node 24'   // 引用全局配置的NodeJS（用于Newman）
     }
     stages {
