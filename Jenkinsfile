@@ -7,9 +7,9 @@ pipeline {
     stages {
         stage('Checkout Code from GitHub') {
             steps {
-                git url: 'https://github.com/你的用户名/flask-demo-api.git',
+                git url: 'https://github.com/youke1022/--demo-api.git',
                     branch: 'main',
-                    credentialsId: 'github-credentials'  // 替换为你的凭据ID
+                    credentialsId: '836f2704-23a0-49a8-b83b-3bdcb19cb2ca'  // 替换为你的凭据ID
             }
         }
 
@@ -94,4 +94,5 @@ pipeline {
             echo 'API测试失败，请查看报告！'
         }
     }
+
 }
