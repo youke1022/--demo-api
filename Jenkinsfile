@@ -1,8 +1,13 @@
 pipeline {
     agent any
     tools {
-        'jenkins.plugins.shiningpanda.tools.PythonInstallation' 'python3.9'  // Python工具引用
-        nodejs 'Node 24'  // NodeJS工具引用
+        // 使用ShiningPanda插件完整工具类型名称
+        'jenkins.plugins.shiningpanda.tools.PythonInstallation' 'Python3.9'  // 全局配置的Python名称
+        nodejs 'Node 24'  // 全局配置的NodeJS名称
+    }
+    environment {
+        // 自动注入的环境变量（由ShiningPanda提供）
+        // PYTHON_HOME = E:\jenkins_tools\python3.9（全局配置中的Python路径）
     }
     stages {
         stage('Checkout Code from GitHub') {
@@ -13,42 +18,54 @@ pipeline {
             }
         }
 
+        stage('Create Virtual Environment') {
+            steps {
+                // 使用ShiningPanda提供的Python路径创建虚拟环境
+                bat '%PYTHON_HOME%\\python.exe -m venv venv'
+            }
+        }
+
         stage('Install Python Dependencies') {
             steps {
-                // Windows使用bat命令替代sh
-                bat 'python -m pip install --upgrade pip'
-                bat 'pip install -r requirements.txt'
+                // 激活虚拟环境并安装依赖
+                bat '''
+                    call venv\\Scripts\\activate.bat
+                    python --version
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Start Flask API Server') {
             steps {
                 script {
-                    // Windows后台启动命令（替代nohup）
-                    bat 'start /b python app.py --host=0.0.0.0 > api_server.log 2>&1'
-                    // Windows等待命令（替代sleep）
-                    bat 'timeout /t 15 /nobreak'  // 等待15秒
+                    // 在虚拟环境中启动服务（Windows后台启动）
+                    bat '''
+                        call venv\\Scripts\\activate.bat
+                        start /b python app.py --host=0.0.0.0 > api_server.log 2>&1
+                    '''
+                    // 等待服务初始化
+                    bat 'timeout /t 15 /nobreak'
                 }
             }
         }
 
-        stage('Install Newman (if needed)') {
+        stage('Install Newman') {
             steps {
-                // 使用bat执行npm命令
                 bat 'npm install -g newman newman-reporter-html'
             }
         }
 
-        stage('Run Postman Tests with Newman') {
+        stage('Run Postman Tests') {
             steps {
                 script {
-                    // Windows创建目录命令
-                    bat 'mkdir postman_reports'
-                    // 执行Newman测试（使用bat命令）
-                    bat '''newman run postman/flask-api-collection.json ^
-                        -e postman/dev-env.json ^
-                        -r cli,html ^
-                        --reporter-html-export postman_reports/api_test_report.html'''
+                    bat '''
+                        newman run postman/flask-api-collection.json ^
+                            -e postman/dev-env.json ^
+                            -r cli,html ^
+                            --reporter-html-export postman_reports/api_test_report.html
+                    '''
                 }
             }
             post {
@@ -71,17 +88,19 @@ pipeline {
     }
     post {
         always {
-            // Windows停止服务命令（替代kill）
+            // 停止所有相关进程（虚拟环境+Python服务）
             script {
-                bat 'taskkill /F /IM python.exe /FI "WINDOWTITLE eq *app.py*" || echo 服务未运行'
+                bat '''
+                    taskkill /F /IM python.exe /FI "WINDOWTITLE eq *app.py*" || echo 服务未运行
+                    taskkill /F /IM node.exe /FI "COMMANDLINE eq *newman*" || echo Newman未运行
+                '''
             }
         }
         success {
-            echo 'API测试全部通过！'
+            echo '🎉 API测试全部通过！'
         }
         failure {
-            echo 'API测试失败，请查看报告！'
+            echo '❌ API测试失败，请查看Postman报告'
         }
     }
 }
-
