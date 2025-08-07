@@ -7,7 +7,7 @@ users = [{"id": 1, "name": "Test User"}]
 
 @app.route('/api/users', methods=['GET'])
 def get_users():
-    return jsonify({"users": users})
+    return jsonify({"users": users}),200
 
 @app.route('/api/users', methods=['POST'])
 def add_user():
@@ -17,3 +17,4 @@ def add_user():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
