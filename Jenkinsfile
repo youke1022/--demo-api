@@ -27,7 +27,7 @@ pipeline {
                 // 激活虚拟环境并安装依赖
                 bat '''
                     call venv\\Scripts\\activate.bat
-                    python --version
+                    py --version
                     pip install --upgrade pip
                     pip install -r requirements.txt
                 '''
@@ -40,7 +40,8 @@ pipeline {
                     // 在虚拟环境中启动服务（Windows后台启动）
                     bat '''
                         call venv\\Scripts\\activate.bat
-                        start /b python app.py --host=0.0.0.0 > api_server.log 2>&1
+                        cd .\flask-demo-api
+                        start /b py app.py --host=0.0.0.0 > api_server.log 2>&1
                     '''
                     // 等待服务初始化
                     bat 'timeout /t 15 /nobreak'
@@ -58,10 +59,10 @@ pipeline {
             steps {
                 script {
                     bat '''
-                        newman run postman/flask-api-collection.json ^
-                            -e postman/dev-env.json ^
+                        
+                        newman run tests\postman/test1.postman_collection.json ^
                             -r cli,html ^
-                            --reporter-html-export postman_reports/api_test_report.html
+                            --reporter-html-export tests\postman/api_test_report.html
                     '''
                 }
             }
@@ -101,6 +102,7 @@ pipeline {
         }
     }
 }
+
 
 
 
