@@ -2,13 +2,10 @@ pipeline {
     agent any
     tools {
         // 使用ShiningPanda插件完整工具类型名称
-        'jenkins.plugins.shiningpanda.tools.PythonInstallation' 'Python3.9'  // 全局配置的Python名称
+        'jenkins.plugins.shiningpanda.tools.PythonInstallation' 'python3.9'  // 全局配置的Python名称
         nodejs 'Node 24'  // 全局配置的NodeJS名称
     }
-    environment {
-        // 自动注入的环境变量（由ShiningPanda提供）
-        // PYTHON_HOME = E:\jenkins_tools\python3.9（全局配置中的Python路径）
-    }
+   
     stages {
         stage('Checkout Code from GitHub') {
             steps {
@@ -104,3 +101,4 @@ pipeline {
         }
     }
 }
+
