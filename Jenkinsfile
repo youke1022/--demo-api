@@ -18,7 +18,7 @@ pipeline {
         stage('Create Virtual Environment') {
             steps {
                 // 使用ShiningPanda提供的Python路径创建虚拟环境
-                bat '%PYTHON_HOME%\\python.exe -m venv venv'
+                bat '%PYTHON_HOME%\\py.exe -m venv venv'
             }
         }
 
@@ -40,7 +40,7 @@ pipeline {
                     // 在虚拟环境中启动服务（Windows后台启动）
                     bat '''
                         call venv\\Scripts\\activate.bat
-                        cd .\flask-demo-api
+                        cd .\\flask-demo-api
                         start /b py app.py --host=0.0.0.0 > api_server.log 2>&1
                     '''
                     // 等待服务初始化
@@ -60,9 +60,9 @@ pipeline {
                 script {
                     bat '''
                         
-                        newman run tests\postman/test1.postman_collection.json ^
+                        newman run tests\\postman/test1.postman_collection.json ^
                             -r cli,html ^
-                            --reporter-html-export tests\postman/api_test_report.html
+                            --reporter-html-export tests\\postman/api_test_report.html
                     '''
                 }
             }
@@ -102,6 +102,7 @@ pipeline {
         }
     }
 }
+
 
 
 
