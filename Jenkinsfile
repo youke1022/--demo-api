@@ -27,7 +27,7 @@ pipeline {
                         -v "%WORKSPACE%/flask-demo-api:/app" ^
                         -w /app ^
                         python:3.9-slim ^
-                        cmd /c "pip install -r requirements.txt && python app.py --host=0.0.0.0"
+                        sh -c "pip install -r requirements.txt && python app.py --host=0.0.0.0"
                     '''
                     
                     // 等待服务启动（关键！根据服务启动速度调整）
@@ -70,3 +70,4 @@ pipeline {
         }
     }
 }
+
