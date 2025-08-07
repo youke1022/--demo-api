@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-    // 显式指定Python路径（覆盖插件自动注入）
-    PYTHON_HOME = 'E:\\jenkins_tools\\python3.9'
- }
     tools {
         // 使用ShiningPanda插件完整工具类型名称
         'jenkins.plugins.shiningpanda.tools.PythonInstallation' 'python3.9'  // 全局配置的Python名称
@@ -105,5 +101,6 @@ pipeline {
         }
     }
 }
+
 
 
